@@ -7,14 +7,14 @@
 const int irReceiverPin = 11;             // 紅外線接收器 OUTPUT 訊號接在 pin 11
 IRrecv irrecv(irReceiverPin);            // 定義 IRrecv 物件來接收紅外線訊號
 decode_results results;                  // 解碼結果將放在 decode_results 結構的 result 變數裏
-int setNumber =0;                       //開關變數
+int setNumber =1;                      //開關變數
 //*************************紅外線*************************
 //***************************lcd************************** 
 LiquidCrystal_I2C lcd(0x27,16,2);
+int cursorNumber=1;                  //變數游標
 //***************************lcd**************************
 //***************************溫度*************************
 int DHpin = 2;
-
 //***************************溫度**************************
 void setup(){ 
   Serial.begin(9600);
@@ -24,19 +24,16 @@ void setup(){
   lcd.backlight();                       //LCD點燈
   lcd.setCursor(0, 0);                   // 設定游標位置在第一行行首
   lcdPrint("Hello, Myuser!");
-  delay(1000);
+  delay(500);
   lcd.setCursor(0, 1);                   // 設定游標位置在第二行行首
   lcdPrint("TsengShihche");
-  delay(1000);
+  delay(500);
   lcd.setCursor(0, 0);
   lcdPrint("You can Start!");
-  delay(2000);
+  delay(2500);
   lcd.noBacklight();
 } 
-void lcdPrint(String Char){          //LCD傳輸回圈
-  for (int i=0;i<Char.length();i++)
-    lcd.print(Char[i]);
-}
+
 void loop() { 
   if(Serial.available()){
     delay(100);

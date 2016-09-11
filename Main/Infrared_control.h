@@ -1,6 +1,9 @@
 #include <IRremote.h>
+#include <LiquidCrystal_I2C.h>
+extern LiquidCrystal_I2C lcd;
 #include "Temperature.h"
 long Onpower = 0x00FFA25D;//power
+long change = 0x00FF9867;///change
 long On0 = 0x00FF6897;  // 0
 long On1 = 0x00FF30CF;  // 1
 long On2 = 0x00FF18E7;  // 2
@@ -13,40 +16,44 @@ long On8 = 0x00FF4AB5;  // 8
 long On9 = 0x00FF52AD;  // 9
 extern int setNumber;
 extern decode_results results;
+extern int cursorNumber;
+
 
 void control(decode_results *results){  //紅外縣遙控器
   if ((results->value) == Onpower){        
     if(setNumber==1){
-    //  lcd.backlight(); 
+      lcd.clear();
+      lcd.backlight(); 
       Serial.println("Turn ON");
-     // lcdPrint("Turn ON");
+      lcdPrint("Turn ON");
       setNumber=0;
     }else{
       Serial.println("Turn OFF");
-     // lcdPrint("Turn OFF");
+      lcdPrint("Turn OFF");
       delay(100);
-     // lcd.noBacklight();
+      lcd.clear();
+      lcd.noBacklight();
       setNumber=1;
       }
     }
+  if ((results->value) == change){
+    if(cursorNumber == 0){
+      Serial.println("set Cursor at First");
+      lcd.setCursor(0, 0);
+      cursorNumber=1;
+    }else if(cursorNumber == 1){
+      Serial.println("set Cursor at Twice");
+      lcd.setCursor(0, 1);
+      cursorNumber=0;
+    }
+  }
   if ((results->value) == On0){
-     // lcdPrint("Temperature");
-       // start_Temperature();
-        Serial.print("Current humdity = ");
-       // Serial.print(dat[0], DEC);
-        Serial.print('.');
-       // Serial.print(dat[1],DEC);
-        Serial.println('%');
-
-        Serial.print("Current temperature = ");
-      //  Serial.print(dat[2], DEC);
-        Serial.print('.');
-      //  Serial.print(dat[3],DEC);
-        Serial.println('C');
+      lcdPrint("Temperature:");
+      Temperature();
     }  
   if ((results->value) == On1){
     Serial.println("1");
-   // lcd.print("1");
+    lcdPrint("abcdefghijklmnopqrstuvwxyz");
     }
   if ((results->value) == On2){
     Serial.println("2");
@@ -78,6 +85,11 @@ void control(decode_results *results){  //紅外縣遙控器
     }
   if ((results->value) == On9){
     Serial.println("9");
-    //lcd.print("9");
+    for (int positionCounter = 0; positionCounter < 13; positionCounter++) {
+    // scroll one position left:
+    lcd.scrollDisplayLeft();
+    // wait a bit:
+    delay(150);
+  }
     }
 }
